@@ -1,0 +1,65 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "darwin", "linux-musl-openssl-3.0.x", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+
+model Product {
+  id        String     @default(cuid()) @id
+  title     String
+  merekId   String?
+  merek     Merek?  @relation(fields: [merekId], references: [id]) 
+  desc      String
+  size      Size[]
+  price     Int
+  rate      Float
+  thumbnail String
+  images    Images[] 
+}
+
+model Size{
+  id        String  @default(cuid()) @id
+  size      String
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+}
+
+model Images{
+  id          String  @default(cuid()) @id
+  url         String
+  productId   String
+  product     Product @relation(fields: [productId], references: [id])
+}
+
+model Merek{
+  id            String       @default(cuid()) @id
+  name          String
+  products      Product[]
+}
+
+
+
+model User {
+  id            String  @default(cuid()) @id
+  name          String
+  phone_number  String
+  address       String
+  email         String  @unique
+  password      String
+  retryPassword String
+  role          Role @default(user) 
+}
+
+enum Role {
+  user 
+  admin
+}
+
